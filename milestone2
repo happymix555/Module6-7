@@ -1,0 +1,32 @@
+# %% codecell
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+import matplotlib.image as mpimg
+img = cv2.imread('test_field.PNG',0)
+plt.imshow(img)
+#     top_left = max_loc
+#     bottom_right = (top_left[0] + w, top_left[1] + h)
+#     cv.rectangle(img,top_left, bottom_right, 0, 3)
+#     plt.subplot(121),plt.imshow(res,cmap = 'gray')
+#     plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
+#     plt.subplot(122),plt.imshow(img,cmap = 'gray')
+#     plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
+#     plt.suptitle(meth)
+#     plt.show()
+# %% codecell
+star = cv2.imread('star.PNG')
+fig = plt.figure()
+ax = fig.add_subplot(1, 2, 1)
+imgplot = plt.imshow(star)
+ax.set_title("Original star template")
+
+star = cv2.cvtColor(star, cv2.COLOR_BGR2GRAY)
+star = cv2.Canny(star, 50, 200)
+#Get template(star) height and weight
+(tH, tW) = star.shape[:2]
+ax = fig.add_subplot(1, 2, 2)
+imgplot = plt.imshow(star)
+ax.set_title("Canny filter star template")
+
+# %% codecell
