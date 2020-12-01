@@ -49,7 +49,7 @@ def order_points(pts):
 
 
 
-def four_point_transform(image, pts):
+def four_point_transform(image, pts):#input is ordered point
 	# obtain a consistent order of the points and unpack them
 	# individually
 	rect = order_points(pts)
@@ -106,8 +106,132 @@ def find_max_wh(set_of_image, list_of_corner_id):
             None
     return int(side_length)
 
+def line_intersection(line1, line2):
+    if line1 != None and line2 != None:
+        xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
+        ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
 
-def perspective_transform(original_image, before_point, side_length):
+        def det(a, b):
+            return a[0] * b[1] - a[1] * b[0]
+
+        div = det(xdiff, ydiff)
+        if div == 0:
+           raise Exception('lines do not intersect')
+
+        d = (det(*line1), det(*line2))
+        x = det(d, xdiff) / div
+        y = det(d, ydiff) / div
+        return [int(x), int(y)]
+    else:
+        return None
+
+def distance_between_point(p1, p2):
+    return np.sqrt(pow(p1[0] - p2[0],2) + pow(p1[1] - p2[1], 2))
+
+def find_the_farest_point(list_of_point):
+    max = 0
+    p1 = None
+    p2 = None
+    for p in list_of_point:
+        for p_ref in list_of_point:
+            distance = distance_between_point(p, p_ref)
+            if distance > max:
+                max = distance
+                p1 = p
+                p2 = p_ref
+    if p1 != None and p2 != None:
+        return [p1, p2]
+    else:
+        return None
+
+def find_all_corner(original_image, corner_id, side1_id, side2_id, side3_id, side4_id):
+    real_corner = []
+    compute_corner = []
+    all_side = [[], [], [], []]
+    line = [[], [], [], []]
+    distance_ref = 0
+    corners, ids = detect_aruco(original_image)
+    for id in range(len(ids)):
+        center = compute_aruco_center(corners[id])
+        if ids[id] in corner_id:
+            real_corner.append(center)
+        if ids[id] in side1_id:
+            all_side[0].append(center)
+        if ids[id] in side2_id:
+            all_side[1].append(center)
+        if ids[id] in side3_id:
+            all_side[2].append(center)
+        if ids[id] in side4_id:
+            all_side[3].append(center)
+    if len(real_corner) == 4:
+        return real_corner
+    else:
+        for side in range(len(all_side)):
+            distance_ref = 0
+            l1 = None
+            l2 = None
+            for point in all_side[side]:
+                for point1 in all_side[side]:
+                    distance = distance_between_point(point, point1)
+                    if distance > distance_ref:
+                        distance_ref = distance
+                        l1 = point
+                        l2 = point1
+            line[side].append(l1)
+            line[side].append(l2)
+        compute_corner.append(line_intersection(line[0], line[1]))
+        compute_corner.append(line_intersection(line[1], line[2]))
+        compute_corner.append(line_intersection(line[2], line[3]))
+        compute_corner.append(line_intersection(line[0], line[3]))
+        return compute_corner
+
+def find_corner(image, wanted_corner, side1_id, side2_id):
+    corners, ids = detect_aruco(image)
+    side1 = []
+    side2 = []
+    line1 = []
+    line2 = []
+    corner = []
+    for id in range(len(ids)):
+        center = compute_aruco_center(corners[id])
+        if ids[id] == wanted_corner:
+            return center
+        else:
+            if ids[id] in side1_id:
+                side1.append(center)
+            if ids[id] in side2_id:
+                side2.append(center)
+    line1 = find_the_farest_point(side1)
+    line2 = find_the_farest_point(side2)
+    corner = line_intersection(line1, line2)
+    if corner != None:
+        return corner
+    else:
+        return None
+
+def find_center_of_side(corner1, corner2):
+    x = int(abs(corner1[0] - corner2[0]) / 2)
+    y = int(abs(corner1[1] - corner2[1]) / 2)
+    if corner1[0] < corner2[0]:
+        x = corner1[0] + x
+    else:
+        x = corner2[0] + x
+    if corner1[1] < corner2[1]:
+        y = corner1[1] + y
+    else:
+        y = corner2[1] + y
+    return [x, y]
+
+def find_field_center(corners):
+    ordered_corner = order_points(corners)
+    c1 = find_center_of_side(corners[0], corners[1])
+    c2 = find_center_of_side(corners[2], corners[3])
+    c3 = find_center_of_side(corners[0], corners[3])
+    c4 = find_center_of_side(corners[1], corners[2])
+    center = line_intersection((c1, c2), (c3, c4))
+    return center
+
+def perspective_transform(original_image, before_point, width, height):
     #for point from ARUCO to transform
     top_left = before_point[0]
     top_right = before_point[1]
@@ -116,7 +240,23 @@ def perspective_transform(original_image, before_point, side_length):
 
     before_transform = np.float32([top_left, top_right, bottom_right, bottom_left])
 
-    transform_to = np.float32([[0,0], [side_length - 1, 0], [side_length - 1,side_length - 1], [0, side_length - 1]])
+    transform_to = np.float32([[0,0], [width, 0], [width, height], [0, height]])
     M = cv2.getPerspectiveTransform(before_transform, transform_to)
-    after_perspective_t = cv2.warpPerspective(original_image, M, (side_length, side_length))
+    after_perspective_t = cv2.warpPerspective(original_image, M, (width, height))
     return after_perspective_t
+
+def find_relationship(base_point, ref_point):
+    x = base_point[0] - ref_point[0]
+    y = base_point[1] - ref_point[1]
+    return [x, y]
+
+def point_from_relationship(base_point, relationship):
+    x = base_point[0] - relationship[0]
+    y = base_point[1] - relationship[1]
+    return [x, y]
+
+def is_out_of_image(point, image):
+    if 0 <= point[0] <= image.shape[1] and 0 <= point[1] <= image.shape[0]:
+        return True
+    else:
+        return False

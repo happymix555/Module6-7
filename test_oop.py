@@ -156,7 +156,7 @@ def find_skeleton(gray_image, erode_iter): #return in [x, y]
     from skimage import morphology, filters
     kernel = np.ones((3,3),np.uint8)
     erosion = cv2.erode(filled_pc, kernel, iterations = erode_iter)
-    skeleton = skeletonize(erosion, method='lee')
+    skeleton_image = skeletonize(erosion, method='lee')
     # print(skeleton)
     # for x in range(skeleton.shape[0]):
     #     for y in range(skeleton.shape[1]):
@@ -166,7 +166,7 @@ def find_skeleton(gray_image, erode_iter): #return in [x, y]
         for y in range(len(skeleton[0])):
             if skeleton[x][y] == 255:
                 skeleton_coordinate.append([y, x])
-    return skeleton_coordinate, skeleton
+    return skeleton_coordinate, skeleton_image
 
 def create_skeleton(palette_contour, erode_iter, size_ref_image):
     filled_pc = np.zeros((size_ref_image.shape[0], size_ref_image.shape[1], 1), dtype = np.uint8)
