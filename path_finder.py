@@ -19,9 +19,10 @@ def fill_contour(contour, contour_image_for_size):
     filled = cv2.fillPoly(filled, contour, color=(255,255,255))
     return filled
 
-def skeleton_with_erotion(filled_image, erode_iter):
+def skeleton_with_erotion(filled_image, erode_iter, dilate_iter):
     kernel = np.ones((3,3),np.uint8)
-    erosion = cv2.erode(filled_image, kernel, iterations = erode_iter)
+    dilate = cv2.dilate(filled_image, kernel, iterations = dilate_iter)
+    erosion = cv2.erode(dilate, kernel, iterations = erode_iter)
     skeleton_image = skeletonize(erosion, method='lee')
     return skeleton_image
 
@@ -213,14 +214,14 @@ def find_path_height(full_path_image, all_about_palette, denoised_gray_image):
 #         ref = path[-1]
 #     return path
 
-def is_next_to(point1, point2):
-    ref1 = abs(point1[0] - point2[0])
-    ref2 = abs(point1[1] - point2[1])
-    if (ref1 + ref2) <= 2:
-        if ref1 < 2 and ref2 < 2:
-            return True
-    else:
-        return False
+# def is_next_to(point1, point2):
+#     ref1 = abs(point1[0] - point2[0])
+#     ref2 = abs(point1[1] - point2[1])
+#     if (ref1 + ref2) <= 2:
+#         if ref1 < 2 and ref2 < 2:
+#             return True
+#     else:
+#         return False
 
 def is_point_in_list(point, list):
     count = 0
@@ -232,25 +233,38 @@ def is_point_in_list(point, list):
     else:
         return True
 
+def is_next_to(point1, point2):
+    ref1 = abs(point1[0] - point2[0])
+    ref2 = abs(point1[1] - point2[1])
+    if (ref1 + ref2) <= 2:
+        if ref1 < 2 and ref2 < 2:
+            if point1[0] != point2[0] or point1[1] != point2[1]:
+                return True
+    else:
+        return False
+
 def shortest_pathh(start_point, end_point, full_path_skeleton_image):
     skeleton_co = skeleton_coordinate2(full_path_skeleton_image)
+    skeleton_co2 = skeleton_co.copy()
     ref_for_count = len(skeleton_coordinate2(full_path_skeleton_image))
     list1 = []
     test_count2 = []
+    test_count1 = []
     test_path2 = []
-    for co in skeleton_co:
+    for co in skeleton_co2:
         if co[0] != start_point[0] or co[1] != start_point[1]:
             if is_next_to(start_point, co):
                 list1.append(co)
-                skeleton_co.remove(co)
+                skeleton_co2.remove(co)
+    sk2 = skeleton_co.copy()
     for p in list1:
-        sk2 = skeleton_co
+        # sk2 = skeleton_co.copy()
         path1 = []
         path1.append(start_point)
         path1.append(p)
         count = 0
         count2 = 0
-        while len(sk2) != 0 and count <= ref_for_count:
+        while len(sk2) != 0 and count <= ref_for_count * 2:
             if path1[-1][0] == end_point[0] and path1[-1][1] == end_point[1]:
                 print('mix sud lhor')
                 break
@@ -260,17 +274,116 @@ def shortest_pathh(start_point, end_point, full_path_skeleton_image):
                     if is_next_to(path1[-1], co2):
 
                         # if is_point_in_list(co2, list1) == False:
+                        count2 +=1
                         if is_point_in_list(co2, path1) == False:
-                            count2 +=1
-                            path1.append(co2)
-                            sk2.remove(co2)
+                            if is_point_in_list(co2, list1) == False:
+                            # count2 +=1
+                                path1.append(co2)
+                                # sk2.remove(co2)
         test_count2.append(count2)
+        test_count1.append(count)
         test_path2.append(path1)
     for path in test_path2:
         if path[0][0] == start_point[0] and path[0][1] == start_point[1]:
             if path[-1][0] == end_point[0] and path[-1][1] == end_point[1]:
                 return path
 
+# def shortest_pathh(start_point, end_point, full_path_skeleton_image):
+#     skeleton_co = skeleton_coordinate2(full_path_skeleton_image)
+#     skeleton_co2 = skeleton_co.copy()
+#     ref_for_count = len(skeleton_coordinate2(full_path_skeleton_image))
+#     list1 = []
+#     test_count2 = []
+#     test_count1 = []
+#     test_path2 = []
+#     for co in skeleton_co2:
+#         if co[0] != start_point[0] or co[1] != start_point[1]:
+#             if is_next_to(start_point, co):
+#                 list1.append(co)
+#                 skeleton_co2.remove(co)
+#     for p in list1:
+#         sk2 = skeleton_co.copy()
+#         path1 = []
+#         path1.append(start_point)
+#         path1.append(p)
+#         count = 0
+#         count2 = 0
+#         while len(sk2) != 0 and count <= ref_for_count * 2:
+#             if path1[-1][0] == end_point[0] and path1[-1][1] == end_point[1]:
+#                 print('mix sud lhor')
+#                 break
+#             else:
+#                 count += 1
+#                 for co2 in sk2:
+#                     if is_next_to(path1[-1], co2):
+#
+#                         # if is_point_in_list(co2, list1) == False:
+#                         count2 +=1
+#                         if is_point_in_list(co2, path1) == False:
+#                             # count2 +=1
+#                             path1.append(co2)
+#                             # sk2.remove(co2)
+#         test_count2.append(count2)
+#         test_count1.append(count)
+#         test_path2.append(path1)
+#     for path in test_path2:
+#         if path[0][0] == start_point[0] and path[0][1] == start_point[1]:
+#             if path[-1][0] == end_point[0] and path[-1][1] == end_point[1]:
+#                 return path
+# def shortest_pathh(start_point, end_point, full_path_skeleton_image):
+#     skeleton_co = skeleton_coordinate2(full_path_skeleton_image)
+#     ref_for_count = len(skeleton_coordinate2(full_path_skeleton_image))
+#     list1 = []
+#     test_count2 = []
+#     test_path2 = []
+#     for co in skeleton_co:
+#         if co[0] != start_point[0] or co[1] != start_point[1]:
+#             if is_next_to(start_point, co):
+#                 list1.append(co)
+#                 skeleton_co.remove(co)
+#     for p in list1:
+#         sk2 = skeleton_co
+#         path1 = []
+#         path1.append(start_point)
+#         path1.append(p)
+#         count = 0
+#         count2 = 0
+#         while len(sk2) != 0 and count <= ref_for_count:
+#             if path1[-1][0] == end_point[0] and path1[-1][1] == end_point[1]:
+#                 print('mix sud lhor')
+#                 break
+#             else:
+#                 count += 1
+#                 for co2 in sk2:
+#                     if is_next_to(path1[-1], co2):
+#
+#                         # if is_point_in_list(co2, list1) == False:
+#                         if is_point_in_list(co2, path1) == False:
+#                             count2 +=1
+#                             path1.append(co2)
+#                             sk2.remove(co2)
+#         test_count2.append(count2)
+#         test_path2.append(path1)
+#     for path in test_path2:
+#         if path[0][0] == start_point[0] and path[0][1] == start_point[1]:
+#             if path[-1][0] == end_point[0] and path[-1][1] == end_point[1]:
+#                 return path
+
+# def find_real_traject_point(start_point, end_point, original_traject_point, full_path_skeleton_image):
+#     traject_point2 = []
+#     for p in original_traject_point:
+#         if traject_point2 != []:
+#             if is_point_in_list(p[0], traject_point2) == False:
+#                 traject_point2.append(p[0])
+#         else:
+#             traject_point2.append(p[0])
+#     short_path= shortest_pathh(start_point, end_point, full_path_skeleton_image)
+#     short_traject_path = []
+#     for point in short_path:
+#         for tp2 in traject_point2:
+#             if point[0] == tp2[0] and point[1] == tp2[1]:
+#                 short_traject_path.append(point)
+#     return short_traject_path, traject_point2
 def find_real_traject_point(start_point, end_point, original_traject_point, full_path_skeleton_image):
     traject_point2 = []
     for p in original_traject_point:
@@ -285,7 +398,7 @@ def find_real_traject_point(start_point, end_point, original_traject_point, full
         for tp2 in traject_point2:
             if point[0] == tp2[0] and point[1] == tp2[1]:
                 short_traject_path.append(point)
-    return short_traject_path
+    return short_traject_path, traject_point2
 
 def center_of_2_point(point1, point2):
     x = int((point1[0] + point2[0]) / 2)

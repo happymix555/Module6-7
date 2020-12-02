@@ -131,13 +131,39 @@ def find_endpoint(checkpoint_location, field_image):
             endpoint = point
     return endpoint
 
-def find_palette_by_checkpoint_area(contours, checkpoint_area):
+# def find_palette_by_checkpoint_area(contours, checkpoint_area):
+#     max_checkpoint_area = checkpoint_area[0]
+#     for a in checkpoint_area:
+#         if a > max_checkpoint_area:
+#             max_checkpoint_area = a
+#     palette_contour = []
+#     for cnt in contours:
+#         if (max_checkpoint_area * 1.5) < cv2.contourArea(cnt) <= (max_checkpoint_area * 4):
+#             palette_contour.append(cnt)
+#     return palette_contour
+
+def find_palette_by_checkpoint_area(contours, checkpoint_area, field_image_for_pixel):
     max_checkpoint_area = checkpoint_area[0]
     for a in checkpoint_area:
         if a > max_checkpoint_area:
             max_checkpoint_area = a
+    r = []
     palette_contour = []
     for cnt in contours:
-        if (max_checkpoint_area * 1.8) < cv2.contourArea(cnt) <= (max_checkpoint_area * 4):
-            palette_contour.append(cnt)
-    return palette_contour
+        pixel_count = 0
+        sum = 0
+        if (max_checkpoint_area * 1.5) < cv2.contourArea(cnt) <= (max_checkpoint_area * 4):
+            for x in range(len(field_image_for_pixel[0])):
+                for y in range(len(field_image_for_pixel)):
+                    dist = cv2.pointPolygonTest(cnt,(x,y),False)
+                    if dist == 1:
+                        sum += field_image_for_pixel[y][x]
+                        pixel_count += 1
+                    else:
+                        None
+            result = int(sum / pixel_count)
+            r.append(result)
+            if result < 150:
+                palette_contour.append(cnt)
+            # palette_contour.append(cnt)
+    return palette_contour, r

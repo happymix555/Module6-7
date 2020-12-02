@@ -13,15 +13,17 @@ from all_aruco import *
 from all_contour import *
 from path_finder import *
 
-# %matplotlib qt
+%matplotlib qt
 
 checkpoint_center = []
 checkpoint_roi = []
 
 field_image = cv2.imread('prepared_field/ready_field.jpg')
 cv2.imshow('original field', field_image)
-field_image = cv2.fastNlMeansDenoisingColored(field_image,None,10,10,7,21)
-cv2.imshow('fastNimean field', field_image)
+# field_image = cv2.fastNlMeansDenoisingColored(field_image,None, 10, 10,7,21)
+# cv2.imshow('fastNimean field', field_image)
+# field_image = cv2.GaussianBlur(field_image,(3,3),0)
+cv2.imshow('gaussian field', field_image)
 kernel_sharpening = np.array([[-1,-1,-1],
                               [-1, 9,-1],
                               [-1,-1,-1]])
@@ -121,7 +123,7 @@ cv2.imshow('End point', c_field)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-pre_palette_contour = find_palette_by_checkpoint_area(contours3, square_areas)
+pre_palette_contour, r = find_palette_by_checkpoint_area(contours3, square_areas, field_gray_blur)
 pre_palette_contour_img = draw_contours(blank_image_with_same_size(field_gray), pre_palette_contour, 3)
 cv2.imshow('pre palette contour', pre_palette_contour_img)
 cv2.waitKey(0)
@@ -142,7 +144,7 @@ for cnt in palette_contour:
     cv2.imshow('filled palette contour', filled_palette_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    skeleton_image = skeleton_with_erotion(filled_palette_image, 15)
+    skeleton_image = skeleton_with_erotion(filled_palette_image, 10, 1)
     cv2.imshow('skeletonized palette', skeleton_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -163,10 +165,10 @@ for cnt in palette_contour:
     all_in_one_palette = [skeleton_image, skeleton_coordinate, opened_point, cnt]
     all_about_palette.append(all_in_one_palette)
 
-all_connected_point = find_connected_point(checkpoint_center, all_about_palette, 200)
+all_connected_point = find_connected_point(checkpoint_center, all_about_palette, 180)
 for cp in all_connected_point:
-    c_field = cv2.circle(c_field, (cp[0][0], cp[0][1]), radius=0, color=(255, 0, 0), thickness=10)
-    c_field = cv2.circle(c_field, (cp[1][0], cp[1][1]), radius=0, color=(255, 0, 0), thickness=10)
+    c_field = cv2.circle(c_field, (cp[0][0], cp[0][1]), radius=0, color=(255, 0, 255), thickness=10)
+    c_field = cv2.circle(c_field, (cp[1][0], cp[1][1]), radius=0, color=(255, 0, 255), thickness=10)
 cv2.imshow('check connected point', c_field)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
@@ -205,29 +207,29 @@ trajec_point_image = blank_image_with_same_size(field_gray)
 
 for cnt in countours:
     peri = cv2.arcLength(cnt, True)
-    traject_point = cv2.approxPolyDP(cnt, 0.01 * peri, True)
+    traject_point = cv2.approxPolyDP(cnt, 0.0015 * peri, True)
     trajec_point_image = cv2.drawContours(trajec_point_image, traject_point, -1, (255, 255, 255), 10)
 
 cv2.imshow("trajec point image", trajec_point_image)
+cv2.imshow('full skeleton path', full_path_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-stp = find_real_traject_point(template_location, ending_location, traject_point, full_path_image)
+stp, traject2 = find_real_traject_point(template_location, ending_location, traject_point, full_path_image)
 c_field = field_image.copy()
 for p in stp:
     c_field = cv2.circle(c_field, (p[0], p[1]), radius=0, color=(255, 0, 255), thickness=10)
     cv2.imshow('pp', c_field)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-stp
+    
 short_path = shortest_pathh(template_location, ending_location, full_path_image)
 c_field = field_image.copy()
 for p in short_path:
     c_field[p[1]][p[0]] = [255, 0, 255]
-cv2.imshow('pp', c_field)
+cv2.imshow('mmm', c_field)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
 short_path_height = short_path_with_height(short_path, full_path_with_height)
 traject_point_with_height = []
 for p in stp:

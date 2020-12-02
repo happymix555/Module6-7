@@ -151,39 +151,66 @@ def find_all_corner(original_image, corner_id, side1_id, side2_id, side3_id, sid
     line = [[], [], [], []]
     distance_ref = 0
     corners, ids = detect_aruco(original_image)
-    for id in range(len(ids)):
-        center = compute_aruco_center(corners[id])
-        if ids[id] in corner_id:
-            real_corner.append(center)
-        if ids[id] in side1_id:
-            all_side[0].append(center)
-        if ids[id] in side2_id:
-            all_side[1].append(center)
-        if ids[id] in side3_id:
-            all_side[2].append(center)
-        if ids[id] in side4_id:
-            all_side[3].append(center)
-    if len(real_corner) == 4:
-        return real_corner
-    else:
-        for side in range(len(all_side)):
-            distance_ref = 0
-            l1 = None
-            l2 = None
-            for point in all_side[side]:
-                for point1 in all_side[side]:
-                    distance = distance_between_point(point, point1)
-                    if distance > distance_ref:
-                        distance_ref = distance
-                        l1 = point
-                        l2 = point1
-            line[side].append(l1)
-            line[side].append(l2)
-        compute_corner.append(line_intersection(line[0], line[1]))
-        compute_corner.append(line_intersection(line[1], line[2]))
-        compute_corner.append(line_intersection(line[2], line[3]))
-        compute_corner.append(line_intersection(line[0], line[3]))
-        return compute_corner
+    try:
+        for id in range(len(ids)):
+            center = compute_aruco_center(corners[id])
+            if ids[id] in corner_id:
+                real_corner.append(center)
+            if ids[id] in side1_id:
+                all_side[0].append(center)
+            if ids[id] in side2_id:
+                all_side[1].append(center)
+            if ids[id] in side3_id:
+                all_side[2].append(center)
+            if ids[id] in side4_id:
+                all_side[3].append(center)
+        if len(real_corner) == 4:
+            return real_corner
+        else:
+            for side in range(len(all_side)):
+                distance_ref = 0
+                l1 = None
+                l2 = None
+                for point in all_side[side]:
+                    for point1 in all_side[side]:
+                        distance = distance_between_point(point, point1)
+                        if distance > distance_ref:
+                            distance_ref = distance
+                            l1 = point
+                            l2 = point1
+                line[side].append(l1)
+                line[side].append(l2)
+            compute_corner.append(line_intersection(line[0], line[1]))
+            compute_corner.append(line_intersection(line[1], line[2]))
+            compute_corner.append(line_intersection(line[2], line[3]))
+            compute_corner.append(line_intersection(line[0], line[3]))
+            return compute_corner
+    except:
+        return None
+
+# def find_corner(image, wanted_corner, side1_id, side2_id):
+#     corners, ids = detect_aruco(image)
+#     side1 = []
+#     side2 = []
+#     line1 = []
+#     line2 = []
+#     corner = []
+#     for id in range(len(ids)):
+#         center = compute_aruco_center(corners[id])
+#         if ids[id] == wanted_corner:
+#             return center
+#         else:
+#             if ids[id] in side1_id:
+#                 side1.append(center)
+#             if ids[id] in side2_id:
+#                 side2.append(center)
+#     line1 = find_the_farest_point(side1)
+#     line2 = find_the_farest_point(side2)
+#     corner = line_intersection(line1, line2)
+#     if corner != None:
+#         return corner
+#     else:
+#         return None
 
 def find_corner(image, wanted_corner, side1_id, side2_id):
     corners, ids = detect_aruco(image)
@@ -192,22 +219,23 @@ def find_corner(image, wanted_corner, side1_id, side2_id):
     line1 = []
     line2 = []
     corner = []
-    for id in range(len(ids)):
-        center = compute_aruco_center(corners[id])
-        if ids[id] == wanted_corner:
-            return center
-        else:
-            if ids[id] in side1_id:
-                side1.append(center)
-            if ids[id] in side2_id:
-                side2.append(center)
-    line1 = find_the_farest_point(side1)
-    line2 = find_the_farest_point(side2)
-    corner = line_intersection(line1, line2)
-    if corner != None:
+    try:
+        for id in range(len(ids)):
+            center = compute_aruco_center(corners[id])
+            if ids[id] == wanted_corner:
+                return center
+            else:
+                if ids[id] in side1_id:
+                    side1.append(center)
+                if ids[id] in side2_id:
+                    side2.append(center)
+        line1 = find_the_farest_point(side1)
+        line2 = find_the_farest_point(side2)
+        corner = line_intersection(line1, line2)
         return corner
-    else:
+    except:
         return None
+
 
 def find_center_of_side(corner1, corner2):
     x = int(abs(corner1[0] - corner2[0]) / 2)

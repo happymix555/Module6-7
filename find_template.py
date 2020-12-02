@@ -15,7 +15,7 @@ from all_contour import *
 def find_template_contours(contours, image_for_area):
     full_area = len(image_for_area) * len(image_for_area[0])
     checkpoint_area = int(full_area)
-    min_checkpoint_area = int(checkpoint_area / 5)
+    min_checkpoint_area = int(checkpoint_area / 20)
     template_contour = []
     area = []
     for cnt in contours:
@@ -29,12 +29,42 @@ def find_template_contours(contours, image_for_area):
             if ar >= 0.9 and ar <= 1.1:
                 # area.append(cv2.contourArea(cnt))
                 if min_checkpoint_area <= cv2.contourArea(cnt) <= checkpoint_area: #and cv2.contourArea(cnt) > (checkpoint_area / 3):
-                    area.append(cv2.contourArea(cnt))
+                # if cv2.isContourConvex(cnt) == True:
+                    # area.append(cv2.contourArea(cnt))
                     template_contour.append(cnt)
 			# shape = "square" if ar >= 0.95 and ar <= 1.05 else "rectangle"
     return template_contour
 
-raw_template = cv2.imread('raw_template/yellow_template.jpg')
+def close_contour(contours):
+    for cnt in contours:
+        if cv2.isContourConvex(cnt) == True:
+            return cnt
+
+
+vid = cv2.VideoCapture(0 + cv2.CAP_DSHOW)
+vid.set(3, 1280) # set the resolution
+vid.set(4, 720)
+while(True):
+
+    # Capture the video frame
+    # by frame
+    ret, frame = vid.read()
+
+    # Display the resulting frame
+    cv2.imshow('frame', frame)
+    key = cv2.waitKey(1)
+    # if key == ord('c'):
+    #     name_and_path = 'rail_image/rail_image_loop/' + str(image_count) + '.jpg'
+    #     cv2.imwrite(name_and_path, frame)
+    #     image_count += 1
+    # elif key & 0xFF == ord('q'):
+    #     break
+    if key == ord('c'):
+        name_and_path = 'raw_template/' + str(0) + '.jpg'
+        cv2.imwrite(name_and_path, frame)
+    elif key & 0xFF == ord('q'):
+        break
+raw_template = cv2.imread('raw_template/0.jpg')
 raw_template = resize_percent(raw_template, 50)
 cv2.imshow('raw template', raw_template)
 cv2.waitKey(0)
@@ -65,8 +95,9 @@ cv2.imshow('template contour img', template_contour_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
+
 prepared_template = find_roi(template_contour[0], raw_template)
 cv2.imshow('prepared template', prepared_template)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-cv2.imwrite('prepared_template/prepared_template.jpg', prepared_template)
+cv2.imwrite('prepared_template/0.jpg', prepared_template)
