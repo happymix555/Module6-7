@@ -40,13 +40,12 @@ def lnwmodule_initUART():
 
 def lnwmodule_acknowledge():
     arr = []
-    arr = lnwmodule.read(3)
-    print(arr)
-    if(arr[0] == 255):
-        if(arr[1] == 105):
-            if(arr[2] == 104):
-                print(arr)
-                return False
+    arr = lnwmodule.read(4)
+    if(arr[1] == 255):
+        if(arr[2] == 105):
+            if(arr[3] == 104):
+                # print(arr)
+                return True
             else:
                 arr = []
         else:
@@ -89,11 +88,11 @@ def lnwmodule_sethome():
 #     package[-1] = sum(package)%256
 #     lnwmodule.write(package)
 
-def image_to_world(point):
-    x = point[0]
-    y = point[1]
-    z = point[2]
-    return [x, y, z]
+# def image_to_world(point):
+#     x = point[0]
+#     y = point[1]
+#     z = point[2]
+#     return [x, y, z]
 
 # def lnwmodule_go2pos(list_of_point, offset_x, offset_y):
 #     package = [255,2,0,0,0,0,0,0,0,0,0]
@@ -176,56 +175,57 @@ def lnwmodule_go2pos(point, ref_x, ref_y, ref_z, offset_x, offset_y):
     lnwmodule.write(package)
     return current_x ,current_y, current_z
 
-def resetPic():
-    lnwmodule.rts = 1
-    lnwmodule.rts = 0
+# def resetPic():
+#     lnwmodule.rts = 1
+#     lnwmodule.rts = 0
+#
+# def waitingPic():
+#     state_wait = 0
+#     while(lnwmodule.in_waiting):
+#         pass
+#     arr = []
+#     arr2 = []
+#     arr = lnwmodule.read(3)
+#     print(arr)
+#     if(arr[0] == 255):
+#         if(arr[1] == 105):
+#             if(arr[2] == 104):
+#                 state_wait = 1
+#             else:
+#                 arr = []
+#         else:
+#             arr = []
+#     else:
+#         arr = []
+#     if(state_wait == 1):
+#         while(lnwmodule.in_waiting):
+#             pass
+#         arr2 = lnwmodule.read(3)
+#         if(arr2[0] == 255):
+#             if(arr2[1] == 160):
+#                 if(arr2[2] == 159):
+#                     resetPic()
+#                 else:
+#                     arr2 = []
+#             else:
+#                 arr2 = []
+#         else:
+#             arr2 = []
+#     else:
+#         resetPic()
 
-def waitingPic():
-    state_wait = 0
-    while(lnwmodule.in_waiting):
-        pass
-    arr = []
-    arr2 = []
-    arr = lnwmodule.read(3)
-    print(arr)
-    if(arr[0] == 255):
-        if(arr[1] == 105):
-            if(arr[2] == 104):
-                state_wait = 1
-            else:
-                arr = []
-        else:
-            arr = []
-    else:
-        arr = []
-    if(state_wait == 1):
-        while(lnwmodule.in_waiting):
-            pass
-        arr2 = lnwmodule.read(3)
-        if(arr2[0] == 255):
-            if(arr2[1] == 160):
-                if(arr2[2] == 159):
-                    resetPic()
-                else:
-                    arr2 = []
-            else:
-                arr2 = []
-        else:
-            arr2 = []
-    else:
-        resetPic()
-
-def lnwmodule_rotate(Degree):
-    package = [255,3,0,0,0,0,0,0,0,0,0]
-    package[8] = int(Degree)
-    package[-1] = sum(package)%256
-    lnwmodule.write(package)
+# def lnwmodule_rotate(Degree):
+#     package = [255,3,0,0,0,0,0,0,0,0,0]
+#     package[8] = int(Degree)
+#     package[-1] = sum(package)%256
+#     lnwmodule.write(package)
 
 
 def lnwmodule_grip(grip):
-    package = [255,4,0,0,0,0,0,0,0,0,0]
-    package[9] = grip
+    package = [255,3,0,0,0,0,0,0,0,0]
+    package[8] = grip
     package[-1] = sum(package)%256
+    print('package = ' + str(package))
     lnwmodule.write(package)
 
 def lnwmodule_done():
@@ -240,15 +240,18 @@ def lnwmodule_done():
         state = 1
     return state
 
-buf = []
-lnwmodule = serial.Serial()
-lnwmodule.baudrate = 19200
-lnwmodule.port = 'COM4'
-lnwmodule.rts = 0
-lnwmodule.open()
-for i in range(100):
-    lnwmodule_sethome()
-    while(lnwmodule.in_waiting):
-        pass
-    lnwmodule_acknowledge()
-print("finish")
+# buf = []
+# lnwmodule = serial.Serial()
+# lnwmodule.baudrate = 19200
+# lnwmodule.port = 'COM14'
+# lnwmodule.rts = 0
+# lnwmodule.open()
+# lnwmodule_grip(1)
+# while(lnwmodule.in_waiting):
+#      pass
+# lnwmodule_acknowledge()
+# while(lnwmodule.in_waiting):
+#      pass
+# buf = lnwmodule.read(10)
+# print('buf = ' + str(buf))
+# inwait
