@@ -40,6 +40,23 @@ def close_contour(contours):
         if cv2.isContourConvex(cnt) == True:
             return cnt
 
+def detect_big_white(image):
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    lower_white = np.array([25,25,168], dtype=np.uint8)
+    upper_white = np.array([172,111,255], dtype=np.uint8)
+    mask = cv2.inRange(hsv, lower_white, upper_white)
+    res = cv2.bitwise_and(image,image, mask= mask)
+    return res
+
+def largest_contour(contours):
+    big_white = contours[0]
+    max_area = 0
+    for cnt in contours:
+        if cv2.contourArea(cnt) > max_area:
+            big_white = cnt
+            max_area = cv2.contourArea(cnt)
+    return big_white
+
 
 vid = cv2.VideoCapture(0 + cv2.CAP_DSHOW)
 vid.set(3, 1280) # set the resolution
@@ -60,7 +77,7 @@ while(True):
     # elif key & 0xFF == ord('q'):
     #     break
     if key == ord('c'):
-        name_and_path = 'raw_template/' + str(0) + '.jpg'
+        name_and_path = 'raw_template/' + str(1) + '.jpg'
         cv2.imwrite(name_and_path, frame)
     elif key & 0xFF == ord('q'):
         break
@@ -70,12 +87,25 @@ cv2.imshow('raw template', raw_template)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
+# big_white = detect_big_white(raw_template)
+# cv2.imshow('big white', big_white)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
 raw_template_gray = cv2.cvtColor(raw_template, cv2.COLOR_BGR2GRAY)
 contours, hierarchy = find_contours(raw_template_gray, 40, 100, 3, 1, 'tree')
 first_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), contours, 10)
 cv2.imshow('first contour', first_contour_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+
+# contours, hierarchy = find_contours(first_contour_img, 40, 100, 3, 1, 'tree')
+# large = largest_contour(contours)
+# first_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), large, 1)
+# cv2.imshow('first contour', first_contour_img)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
 contours2, hierarchy2 = find_contours(first_contour_img, 40, 100, 3, 1, 'tree')
 second_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), contours2, 3)
@@ -85,7 +115,7 @@ cv2.destroyAllWindows()
 
 pre_square_contour, pre_square_hie = find_contours(second_contour_img, 40, 100, 3, 1, 'external')
 pre_square_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), pre_square_contour, 3)
-cv2.imshow('second contour', pre_square_contour_img)
+cv2.imshow('pre square contour', pre_square_contour_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 

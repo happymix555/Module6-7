@@ -18,6 +18,7 @@ from path_finder import *
 checkpoint_center = []
 checkpoint_roi = []
 
+template_image = cv2.imread('prepared_template/prepared_template.jpg')
 field_image = cv2.imread('prepared_field/ready_field.jpg')
 cv2.imshow('original field', field_image)
 # field_image = cv2.fastNlMeansDenoisingColored(field_image,None, 10, 10,7,21)
@@ -42,7 +43,7 @@ cv2.namedWindow('first contour')
 cv2.createTrackbar('canny LOW','first contour',0,255,nothing)
 cv2.createTrackbar('canny HIGH','first contour',100,255,nothing)
 cv2.createTrackbar('Gaussian kernel size','first contour',1,21,nothing)
-cv2.createTrackbar('Thickness','first contour',1,21,nothing)
+cv2.createTrackbar('Thickness','first contour',1,30,nothing)
 
 while(1):
     # cv2.imshow('image',img)
@@ -104,7 +105,7 @@ for r in checkpoint_roi:
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-template_image = cv2.imread('prepared_template/prepared_template.jpg')
+# template_image = cv2.imread('prepared_template/prepared_template.jpg')
 cv2.imshow('template', template_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
@@ -222,7 +223,7 @@ for p in stp:
     cv2.imshow('pp', c_field)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    
+
 short_path = shortest_pathh(template_location, ending_location, full_path_image)
 c_field = field_image.copy()
 for p in short_path:
@@ -235,8 +236,21 @@ traject_point_with_height = []
 for p in stp:
     for p2 in short_path_height:
         if p[0] == p2[0] and p[1] == p2[1]:
-            traject_point_with_height.append([p[0], p[1], p2[2]])
+            if traject_point_with_height != []:
+                if distance_between_point([traject_point_with_height[-1][0], traject_point_with_height[-1][1]], p) > 10:
+                    traject_point_with_height.append([p[0], p[1], p2[2]])
+            else:
+                    traject_point_with_height.append([p[0], p[1], p2[2]])
+
 traject_point_with_height
+c_field = field_image.copy()
+for p in traject_point_with_height:
+    c_field = cv2.circle(c_field, (p[0], p[1]), radius=0, color=(0, 255, 255), thickness=10)
+    cv2.imshow('traject point with height', c_field)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
 short_path_height
 from mpl_toolkits import mplot3d
 fig = plt.figure()

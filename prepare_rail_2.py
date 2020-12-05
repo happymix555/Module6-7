@@ -113,7 +113,10 @@ BL2Three = find_relationship(ordered_point[3], side3_center)
 BL2Four = find_relationship(ordered_point[3], side4_center)
 BL2C = find_relationship(ordered_point[3], field_center)
 
-img_count = 0
+q1_count = 0
+q2_count = 0
+q3_count = 0
+q4_count = 0
 #find relationship
 Q1 = []
 Q2 = []
@@ -131,7 +134,7 @@ for img in images:
         if is_out_of_image(recon1, img) and is_out_of_image(reconC, img) and is_out_of_image(recon4, img):
             before_point = [TL, recon1, reconC, recon4]
             Q1.append(perspective_transform(img, before_point, 300, 300))
-            img_count += 1
+            q1_count += 1
     if TR != None:
         recon1 = point_from_relationship(TR, TR2One)
         reconC = point_from_relationship(TR, TR2C)
@@ -139,7 +142,7 @@ for img in images:
         if is_out_of_image(recon1, img) and is_out_of_image(reconC, img) and is_out_of_image(recon2, img):
             before_point = [recon1, TR, recon2, reconC]
             Q2.append(perspective_transform(img, before_point, 300, 300))
-            img_count += 1
+            q2_count += 1
     if BR != None:
         recon2 = point_from_relationship(BR, BR2Two)
         reconC = point_from_relationship(BR, BR2C)
@@ -147,7 +150,7 @@ for img in images:
         if is_out_of_image(recon2, img) and is_out_of_image(reconC, img) and is_out_of_image(recon3, img):
             before_point = [reconC, recon2, BR, recon3]
             Q3.append(perspective_transform(img, before_point, 300, 300))
-            img_count += 1
+            q3_count += 1
     if BL != None:
         recon3 = point_from_relationship(BL, BL2Three)
         reconC = point_from_relationship(BL, BL2C)
@@ -155,7 +158,7 @@ for img in images:
         if is_out_of_image(recon3, img) and is_out_of_image(reconC, img) and is_out_of_image(recon4, img):
             before_point = [recon4, reconC, recon3, BL]
             Q4.append(perspective_transform(img, before_point, 300, 300))
-            img_count += 1
+            q4_count += 1
 Q1_stack = tuple(Q1)
 Q2_stack = tuple(Q2)
 Q3_stack = tuple(Q3)
@@ -176,7 +179,10 @@ cv2.imshow('full_sequence', horizontal)
 cv2.imwrite('prepared_field/ready_field.jpg', horizontal)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-img_count
+print('q1 = ' + str(q1_count) + '\n')
+print('q2 = ' + str(q2_count) + '\n')
+print('q3 = ' + str(q3_count) + '\n')
+print('q4 = ' + str(q4_count) + '\n')
 
 # full_field_image2 = images[3]
 # img2 = full_field_image2.copy()

@@ -53,7 +53,7 @@ def lnwmodule_acknowledge():
             arr = []
     else:
         arr = []
-    
+
 
 
 def lnwmodule_sethome():
@@ -138,7 +138,7 @@ def image_to_world(point):
 #         lnwmodule.write(package)
 
 def lnwmodule_go2pos(point, ref_x, ref_y, ref_z, offset_x, offset_y):
-    package = [255,2,0,0,0,0,0,0,0,0,0]
+    package = [255,2,0,0,0,0,0,0,0,0]
     real_point = image_to_world(point)
     current_x = real_point[0]
     current_y = real_point[1]
@@ -176,6 +176,44 @@ def lnwmodule_go2pos(point, ref_x, ref_y, ref_z, offset_x, offset_y):
     lnwmodule.write(package)
     return current_x ,current_y, current_z
 
+def resetPic():
+    lnwmodule.rts = 1
+    lnwmodule.rts = 0
+
+def waitingPic():
+    state_wait = 0
+    while(lnwmodule.in_waiting):
+        pass
+    arr = []
+    arr2 = []
+    arr = lnwmodule.read(3)
+    print(arr)
+    if(arr[0] == 255):
+        if(arr[1] == 105):
+            if(arr[2] == 104):
+                state_wait = 1
+            else:
+                arr = []
+        else:
+            arr = []
+    else:
+        arr = []
+    if(state_wait == 1):
+        while(lnwmodule.in_waiting):
+            pass
+        arr2 = lnwmodule.read(3)
+        if(arr2[0] == 255):
+            if(arr2[1] == 160):
+                if(arr2[2] == 159):
+                    resetPic()
+                else:
+                    arr2 = []
+            else:
+                arr2 = []
+        else:
+            arr2 = []
+    else:
+        resetPic()
 
 def lnwmodule_rotate(Degree):
     package = [255,3,0,0,0,0,0,0,0,0,0]

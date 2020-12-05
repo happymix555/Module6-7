@@ -398,6 +398,13 @@ def find_real_traject_point(start_point, end_point, original_traject_point, full
         for tp2 in traject_point2:
             if point[0] == tp2[0] and point[1] == tp2[1]:
                 short_traject_path.append(point)
+    # real_traject_path = []
+    # for p in short_traject_path:
+    #     for p2 in short_traject_path:
+    #         if real_traject_path == []:
+    #             real_traject_path.append(p)
+    #         else:
+    #
     return short_traject_path, traject_point2
 
 def center_of_2_point(point1, point2):
@@ -433,3 +440,11 @@ def short_path_with_height(shortest_path, full_path_with_height):
                 real_path.append(sp)
                 stack = []
     return real_path
+
+def image_to_world(image_point, offset_x, offset_y, offset_z, image_x_dimension, image_y_dimension, world_x_dimension, world_y_dimension):
+    x_ref = int(world_x_dimension / image_x_dimension)
+    y_ref = int(world_y_dimension / image_y_dimension)
+    x_result = (image_point[0] * x_ref) + offset_x
+    y_result = (image_point[1] * y_ref) + offset_y
+    z_result = image_point[2] + offset_z
+    return [x_result, y_result, z_result]
