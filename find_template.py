@@ -6,6 +6,7 @@ import glob
 import numpy as np
 from numpy import asarray
 from PIL import Image
+import os
 
 from delete_rail import *
 from perspective import *
@@ -58,76 +59,162 @@ def largest_contour(contours):
     return big_white
 
 
-vid = cv2.VideoCapture(0 + cv2.CAP_DSHOW)
-vid.set(3, 1280) # set the resolution
-vid.set(4, 720)
-while(True):
-
-    # Capture the video frame
-    # by frame
-    ret, frame = vid.read()
-
-    # Display the resulting frame
-    cv2.imshow('frame', frame)
-    key = cv2.waitKey(1)
-    # if key == ord('c'):
-    #     name_and_path = 'rail_image/rail_image_loop/' + str(image_count) + '.jpg'
-    #     cv2.imwrite(name_and_path, frame)
-    #     image_count += 1
-    # elif key & 0xFF == ord('q'):
-    #     break
-    if key == ord('c'):
-        name_and_path = 'raw_template/' + str(1) + '.jpg'
-        cv2.imwrite(name_and_path, frame)
-    elif key & 0xFF == ord('q'):
-        break
-raw_template = cv2.imread('raw_template/0.jpg')
-raw_template = resize_percent(raw_template, 50)
-cv2.imshow('raw template', raw_template)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-# big_white = detect_big_white(raw_template)
-# cv2.imshow('big white', big_white)
+# vid = cv2.VideoCapture(0 + cv2.CAP_DSHOW)
+# vid.set(3, 1280) # set the resolution
+# vid.set(4, 720)
+# while(True):
+#
+#     # Capture the video frame
+#     # by frame
+#     ret, frame = vid.read()
+#
+#     # Display the resulting frame
+#     cv2.imshow('frame', frame)
+#     key = cv2.waitKey(1)
+#     # if key == ord('c'):
+#     #     name_and_path = 'rail_image/rail_image_loop/' + str(image_count) + '.jpg'
+#     #     cv2.imwrite(name_and_path, frame)
+#     #     image_count += 1
+#     # elif key & 0xFF == ord('q'):
+#     #     break
+#     if key == ord('c'):
+#         name_and_path = 'raw_template/' + str(1) + '.jpg'
+#         cv2.imwrite(name_and_path, frame)
+#     elif key & 0xFF == ord('q'):
+#         break
+# raw_template = cv2.imread('raw_template/0.jpg')
+# raw_template = resize_percent(raw_template, 50)
+# cv2.imshow('raw template', raw_template)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
-
-raw_template_gray = cv2.cvtColor(raw_template, cv2.COLOR_BGR2GRAY)
-contours, hierarchy = find_contours(raw_template_gray, 40, 100, 3, 1, 'tree')
-first_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), contours, 10)
-cv2.imshow('first contour', first_contour_img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-
-# contours, hierarchy = find_contours(first_contour_img, 40, 100, 3, 1, 'tree')
-# large = largest_contour(contours)
-# first_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), large, 1)
+#
+# # big_white = detect_big_white(raw_template)
+# # cv2.imshow('big white', big_white)
+# # cv2.waitKey(0)
+# # cv2.destroyAllWindows()
+#
+# raw_template_gray = cv2.cvtColor(raw_template, cv2.COLOR_BGR2GRAY)
+# contours, hierarchy = find_contours(raw_template_gray, 40, 100, 3, 1, 'tree')
+# first_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), contours, 10)
 # cv2.imshow('first contour', first_contour_img)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
+#
+#
+# # contours, hierarchy = find_contours(first_contour_img, 40, 100, 3, 1, 'tree')
+# # large = largest_contour(contours)
+# # first_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), large, 1)
+# # cv2.imshow('first contour', first_contour_img)
+# # cv2.waitKey(0)
+# # cv2.destroyAllWindows()
+#
+# contours2, hierarchy2 = find_contours(first_contour_img, 40, 100, 3, 1, 'tree')
+# second_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), contours2, 3)
+# cv2.imshow('second contour', second_contour_img)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+#
+# pre_square_contour, pre_square_hie = find_contours(second_contour_img, 40, 100, 3, 1, 'external')
+# pre_square_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), pre_square_contour, 3)
+# cv2.imshow('pre square contour', pre_square_contour_img)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+#
+# template_contour = find_template_contours(pre_square_contour, raw_template_gray)
+# template_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), template_contour, 1)
+# cv2.imshow('template contour img', template_contour_img)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+#
+#
+# prepared_template = find_roi(template_contour[0], raw_template)
+# cv2.imshow('prepared template', prepared_template)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+# cv2.imwrite('prepared_template/0.jpg', prepared_template)
 
-contours2, hierarchy2 = find_contours(first_contour_img, 40, 100, 3, 1, 'tree')
-second_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), contours2, 3)
-cv2.imshow('second contour', second_contour_img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-pre_square_contour, pre_square_hie = find_contours(second_contour_img, 40, 100, 3, 1, 'external')
-pre_square_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), pre_square_contour, 3)
-cv2.imshow('pre square contour', pre_square_contour_img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-template_contour = find_template_contours(pre_square_contour, raw_template_gray)
-template_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), template_contour, 1)
-cv2.imshow('template contour img', template_contour_img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
 
 
-prepared_template = find_roi(template_contour[0], raw_template)
-cv2.imshow('prepared template', prepared_template)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-cv2.imwrite('prepared_template/0.jpg', prepared_template)
+def all_find_template():
+    path = 'raw_template'
+    files = glob.glob(path + '/*')
+    try:
+        for f in files:
+            os.remove(f)
+    except:
+        pass
+    vid = cv2.VideoCapture(0 + cv2.CAP_DSHOW)
+    vid.set(3, 1280) # set the resolution
+    vid.set(4, 720)
+    while(True):
+
+        # Capture the video frame
+        # by frame
+        ret, frame = vid.read()
+
+        # Display the resulting frame
+        cv2.imshow('frame', frame)
+        key = cv2.waitKey(1)
+        # if key == ord('c'):
+        #     name_and_path = 'rail_image/rail_image_loop/' + str(image_count) + '.jpg'
+        #     cv2.imwrite(name_and_path, frame)
+        #     image_count += 1
+        # elif key & 0xFF == ord('q'):
+        #     break
+        if key == ord('c'):
+            name_and_path = 'raw_template/' + str(0) + '.jpg'
+            cv2.imwrite(name_and_path, frame)
+        elif key & 0xFF == ord('q'):
+            break
+    raw_template = cv2.imread('raw_template/0.jpg')
+    raw_template = resize_percent(raw_template, 50)
+    cv2.imshow('raw template', raw_template)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    # big_white = detect_big_white(raw_template)
+    # cv2.imshow('big white', big_white)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    raw_template_gray = cv2.cvtColor(raw_template, cv2.COLOR_BGR2GRAY)
+    contours, hierarchy = find_contours(raw_template_gray, 40, 100, 3, 1, 'tree')
+    first_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), contours, 10)
+    cv2.imshow('first contour', first_contour_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+    # contours, hierarchy = find_contours(first_contour_img, 40, 100, 3, 1, 'tree')
+    # large = largest_contour(contours)
+    # first_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), large, 1)
+    # cv2.imshow('first contour', first_contour_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    contours2, hierarchy2 = find_contours(first_contour_img, 40, 100, 3, 1, 'tree')
+    second_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), contours2, 3)
+    cv2.imshow('second contour', second_contour_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    pre_square_contour, pre_square_hie = find_contours(second_contour_img, 40, 100, 3, 1, 'external')
+    pre_square_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), pre_square_contour, 3)
+    cv2.imshow('pre square contour', pre_square_contour_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    template_contour = find_template_contours(pre_square_contour, raw_template_gray)
+    template_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), template_contour, 1)
+    cv2.imshow('template contour img', template_contour_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+    prepared_template = find_roi(template_contour[0], raw_template)
+    cv2.imshow('prepared template', prepared_template)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    cv2.imwrite('prepared_template/0.jpg', prepared_template)
+
+# all_find_template()
