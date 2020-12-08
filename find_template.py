@@ -216,4 +216,4 @@ def all_find_template():
     cv2.destroyAllWindows()
     cv2.imwrite('prepared_template/0.jpg', prepared_template)
 
-# all_find_template()
+all_find_template()

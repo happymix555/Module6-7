@@ -72,7 +72,7 @@ while(1):
 # cv2.destroyAllWindows()
 
 contours2, hierarchy2 = find_contours(first_contour_img, 40, 100, 3, 1, 'tree')
-second_contour_img = draw_contours(blank_image_with_same_size(field_gray), contours2, 3)
+second_contour_img = draw_contours(blank_image_with_same_size(field_gray), contours2, 2)
 cv2.imshow('second contour', second_contour_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
@@ -80,7 +80,7 @@ cv2.destroyAllWindows()
 
 contours3, hierarchy3 = find_contours(second_contour_img, 40, 100, 3, 1, 'external')
 third_contour_img = draw_contours(blank_image_with_same_size(field_gray), contours3, 1)
-cv2.imshow('second contour', third_contour_img)
+cv2.imshow('third contour', third_contour_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 

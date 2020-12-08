@@ -20,6 +20,8 @@ from perspective import *
 from all_aruco import *
 from all_contour import *
 from path_finder import *
+# from loop_picture import *
+# import setting
 
 import serial
 import math
@@ -365,7 +367,7 @@ def demo1_gotoPos(list_of_pos):
     record_flag = 0
     ref_x = 0
     ref_y = 0
-    ref_z = 0
+    ref_z = list_of_pos[0][2]
     cc = 0
     while(True):
         cc += 1
@@ -414,6 +416,14 @@ lnwmodule.rts = 0
 lnwmodule.open()
 
 demo1_home()
+
+# record_trigger = 0
+list_of_position = [[220, 340, 100]]
+demo1_gotoPos(list_of_position)
+# if __name__ == "__main__":
+#     record_trigger = 1
+
+
 
 list_of_position = [[220, 340, 100],[210,390,100],[20,390,100],[20,150,100],[390,150,100],[390,390,100],[20,390,100],[220, 340, 100]]
 demo1_gotoPos(list_of_position)
