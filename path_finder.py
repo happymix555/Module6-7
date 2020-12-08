@@ -442,9 +442,9 @@ def short_path_with_height(shortest_path, full_path_with_height):
     return real_path
 
 def image_to_world(image_point, offset_x, offset_y, offset_z, image_x_dimension, image_y_dimension, world_x_dimension, world_y_dimension):
-    x_ref = int(world_x_dimension / image_x_dimension)
-    y_ref = int(world_y_dimension / image_y_dimension)
-    x_result = (image_point[0] * x_ref) + offset_x
-    y_result = (image_point[1] * y_ref) + offset_y
-    z_result = image_point[2] + offset_z
+    x_ref11 = world_x_dimension / image_x_dimension
+    y_ref11 = world_y_dimension / image_y_dimension
+    x_result = round((image_point[0] * x_ref11) + offset_x)
+    y_result = round((image_point[1] * y_ref11) + offset_y)
+    z_result = 400 - round(image_point[2] + offset_z)
     return [x_result, y_result, z_result]

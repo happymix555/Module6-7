@@ -309,3 +309,5 @@ def delete_rail():
     print('q2 = ' + str(q2_count) + '\n')
     print('q3 = ' + str(q3_count) + '\n')
     print('q4 = ' + str(q4_count) + '\n')
+
+# delete_rail()

@@ -18,7 +18,7 @@ from path_finder import *
 checkpoint_center = []
 checkpoint_roi = []
 
-template_image = cv2.imread('prepared_template/prepared_template.jpg')
+template_image = cv2.imread('prepared_template/0.jpg')
 field_image = cv2.imread('prepared_field/ready_field.jpg')
 cv2.imshow('original field', field_image)
 # field_image = cv2.fastNlMeansDenoisingColored(field_image,None, 10, 10,7,21)
@@ -39,11 +39,11 @@ cv2.destroyAllWindows()
 def nothing(x):
     pass
 
-cv2.namedWindow('first contour')
-cv2.createTrackbar('canny LOW','first contour',0,255,nothing)
-cv2.createTrackbar('canny HIGH','first contour',100,255,nothing)
-cv2.createTrackbar('Gaussian kernel size','first contour',1,21,nothing)
-cv2.createTrackbar('Thickness','first contour',1,30,nothing)
+cv2.namedWindow('first contour setting')
+cv2.createTrackbar('canny LOW','first contour setting',0,255,nothing)
+cv2.createTrackbar('canny HIGH','first contour setting',100,255,nothing)
+cv2.createTrackbar('Gaussian kernel size','first contour setting',1,21,nothing)
+cv2.createTrackbar('Thickness','first contour setting',1,30,nothing)
 
 while(1):
     # cv2.imshow('image',img)
@@ -51,15 +51,17 @@ while(1):
     if k == 27:
         cv2.destroyAllWindows()
         break
-    canny_low = cv2.getTrackbarPos('canny LOW','first contour')
-    canny_high = cv2.getTrackbarPos('canny HIGH','first contour')
-    gs = cv2.getTrackbarPos('Gaussian kernel size','first contour')
+    canny_low = cv2.getTrackbarPos('canny LOW','first contour setting')
+    canny_high = cv2.getTrackbarPos('canny HIGH','first contour setting')
+    gs = cv2.getTrackbarPos('Gaussian kernel size','first contour setting')
     gs = ((gs+1) * 2) - 1
-    thickness = cv2.getTrackbarPos('Thickness','first contour')
+    thickness = cv2.getTrackbarPos('Thickness','first contour setting')
     field_gray = cv2.cvtColor(field_image, cv2.COLOR_BGR2GRAY)
     contours, hierarchy = find_contours(field_gray, canny_low, canny_high, gs, gs, 'tree')
     first_contour_img = draw_contours(blank_image_with_same_size(field_gray), contours, thickness)
+    for_track = first_contour_img.copy() * 0
     cv2.imshow('first contour', first_contour_img)
+    cv2.imshow('first contour setting', for_track)
 
 
 # field_gray = cv2.cvtColor(field_image, cv2.COLOR_BGR2GRAY)
@@ -117,15 +119,16 @@ cv2.imshow('start point', c_field)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-ending_location = find_endpoint(checkpoint_center, field_image)
+ending_location, res = find_endpoint(checkpoint_center, field_image)
 c_field = field_image.copy()
 c_field = cv2.circle(c_field, (ending_location[0], ending_location[1]), radius=0, color=(0, 0, 255), thickness=10)
+cv2.imshow('res endpoint', res)
 cv2.imshow('End point', c_field)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 pre_palette_contour, r = find_palette_by_checkpoint_area(contours3, square_areas, field_gray_blur)
-pre_palette_contour_img = draw_contours(blank_image_with_same_size(field_gray), pre_palette_contour, 3)
+pre_palette_contour_img = draw_contours(blank_image_with_same_size(field_gray), pre_palette_contour, 5)
 cv2.imshow('pre palette contour', pre_palette_contour_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
@@ -141,11 +144,16 @@ for cnt in palette_contour:
 test = []
 all_about_palette = []
 for cnt in palette_contour:
-    filled_palette_image = fill_contour([cnt], field_image)
+    elipson = 0.01 * cv2.arcLength(cnt, True)
+    approx = cv2.approxPolyDP(cnt, elipson, True)
+    # cv2.drawContours(ppppp ,[approx], -1, (255, 255, 255), 3)
+    filled_palette_image = fill_contour([approx], field_image)
+    # filled_palette_image = cv2.fillPoly(field_image, [cnt])
+    # filled_palette_image = cv2.drawContours(blank_image_with_same_size(field_image), cnt, (255, 255, 255), -1)
     cv2.imshow('filled palette contour', filled_palette_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    skeleton_image = skeleton_with_erotion(filled_palette_image, 10, 1)
+    skeleton_image = skeleton_with_erotion(filled_palette_image, 20, 5)
     cv2.imshow('skeletonized palette', skeleton_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -237,7 +245,7 @@ for p in stp:
     for p2 in short_path_height:
         if p[0] == p2[0] and p[1] == p2[1]:
             if traject_point_with_height != []:
-                if distance_between_point([traject_point_with_height[-1][0], traject_point_with_height[-1][1]], p) > 10:
+                if distance_between_point([traject_point_with_height[-1][0], traject_point_with_height[-1][1]], p) > 30:
                     traject_point_with_height.append([p[0], p[1], p2[2]])
             else:
                     traject_point_with_height.append([p[0], p[1], p2[2]])
@@ -249,7 +257,6 @@ for p in traject_point_with_height:
     cv2.imshow('traject point with height', c_field)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
 
 short_path_height
 from mpl_toolkits import mplot3d
@@ -265,3 +272,8 @@ for co in short_path_height:
     z.append(co[2])
 ax.scatter3D(x, y, z, 'gray')
 plt.show()
+
+world_traject_point = []
+for i in traject_point_with_height:
+    world_traject_point.append(image_to_world(i, 0, 0, 0, 600, 600, 430, 430))
+world_traject_point

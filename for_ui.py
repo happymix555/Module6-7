@@ -20,6 +20,12 @@ from all_aruco import *
 from all_contour import *
 from path_finder import *
 
+lnwmodule = serial.Serial()
+lnwmodule.baudrate = 19200
+lnwmodule.port = 'COM12'
+lnwmodule.rts = 0
+lnwmodule.open()
+
 state = 0
 
     if state == 0: #capture template
@@ -106,12 +112,16 @@ state = 0
 
         state = 1
     if state == 1: #take multiple field image
+        lnwmodule_sethome()
+        while True:
+            if lnwmodule_acknowledge() == True:
+                break
 
         vid = cv2.VideoCapture(0 + cv2.CAP_DSHOW)
         vid.set(3, 1280) # set the resolution
         vid.set(4, 720)
 
-        list_of_position = []
+        list_of_position = [[200, 200, 0]]
         position_flag = 0
         position_count = 0
         image_count = 0
@@ -134,7 +144,7 @@ state = 0
                     if position_count == len(list_of_position):
                         vid.release()
                         cv2.destroyAllWindows()
-                        state = 2
+                        # state = 2
                         break
                     else:
                         position_count += 1
@@ -278,7 +288,10 @@ state = 0
         test = []
         all_about_palette = []
         for cnt in palette_contour:
-            filled_palette_image = fill_contour([cnt], field_image)
+            elipson = 0.01 * cv2.arcLength(cnt, True)
+            approx = cv2.approxPolyDP(cnt, elipson, True)
+            # cv2.drawContours(ppppp ,[approx], -1, (255, 255, 255), 3)
+            filled_palette_image = fill_contour([approx], field_image)
             cv2.imshow('filled palette contour', filled_palette_image)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
@@ -403,14 +416,59 @@ state = 0
         ax.scatter3D(x, y, z, 'gray')
         plt.show()
 
+        world_traject_point = []
+        for i in traject_point_with_height:
+            world_traject_point.append(image_to_world(i, 0, 0, 0, 600, 600, 400, 400))
+
+        state = 4
+    if state == 4:
+        point = [[200,200,0],[0,0,200]]
+        grip_num = 0
+        ref_x4 = 0
+        ref_y4 = 0
+        ref_z4 = 0
+        for i in range(len(point)):
+            ref_x4 ,ref_y4 ,ref_z4 ,package4 = lnwmodule_go2pos(point[i],ref_x4,ref_y4,ref_z4,0,0)
+            while(True):
+                if lnwmodule_acknowledge() == True:
+                    break
+            while(lnwmodule.in_waiting):
+                pass
+            if lnwmodule_done2(lnwmodule) == True:
+                grip_num + 1
+                pass
+            else:
+                print("err")
+                break
+        if grip_num == len(point):
+            lnwmodule_grip(1) #open gripper
+            while(True):
+                if lnwmodule_acknowledge() == True:
+                    break
+            while(lnwmodule.in_waiting):
+                pass
+            if lnwmodule_done2(lnwmodule) == True:
+                lnwmodule_sethome()
+                while(True):
+                    if lnwmodule_acknowledge() == True:
+                        break
+                while(lnwmodule.in_waiting):
+                    pass
+                if lnwmodule_done2(lnwmodule) == True:
+                    state = 5
+
+
+
+
     if state == 5:
+
         ref_x = 0
         ref_y = 0
         ref_z = 0
         buf = []
         num = 0
-        for i in range(len(traject_point_with_height)):
-            ref_x,ref_y,ref_z,package = lnwmodule_go2pos(traject_point_with_height[i],ref_x,ref_y,ref_z,0,0)
+        for i in range(len(world_traject_point)):
+            ref_x,ref_y,ref_z,package = lnwmodule_go2pos(world_traject_point[i],ref_x,ref_y,ref_z,0,0)
             if(lnwmodule_acknowledge() == True):
                 while(lnwmodule.in_waiting):
                     pass

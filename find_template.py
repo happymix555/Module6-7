@@ -171,7 +171,6 @@ def all_find_template():
     cv2.imshow('raw template', raw_template)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
     # big_white = detect_big_white(raw_template)
     # cv2.imshow('big white', big_white)
     # cv2.waitKey(0)
@@ -179,7 +178,7 @@ def all_find_template():
 
     raw_template_gray = cv2.cvtColor(raw_template, cv2.COLOR_BGR2GRAY)
     contours, hierarchy = find_contours(raw_template_gray, 40, 100, 3, 1, 'tree')
-    first_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), contours, 10)
+    first_contour_img = draw_contours(blank_image_with_same_size(raw_template_gray), contours, 15)
     cv2.imshow('first contour', first_contour_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
