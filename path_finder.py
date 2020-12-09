@@ -243,6 +243,9 @@ def is_next_to(point1, point2):
     else:
         return False
 
+# def is_next_to2(point1, point2):
+
+
 def shortest_pathh(start_point, end_point, full_path_skeleton_image):
     skeleton_co = skeleton_coordinate2(full_path_skeleton_image)
     skeleton_co2 = skeleton_co.copy()
@@ -279,7 +282,7 @@ def shortest_pathh(start_point, end_point, full_path_skeleton_image):
                             if is_point_in_list(co2, list1) == False:
                             # count2 +=1
                                 path1.append(co2)
-                                # sk2.remove(co2)
+                                sk2.remove(co2)
         test_count2.append(count2)
         test_count1.append(count)
         test_path2.append(path1)

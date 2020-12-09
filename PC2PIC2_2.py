@@ -165,19 +165,19 @@ def lnwmodule_sethome():
 #         package[7] = Phi_L
 #         package[-1] = sum(package)%256
 #         lnwmodule.write(package)
+# print(math.atan(1 / -1))
 
-
-def lnwmodule_go2pos(point, ref_x, ref_y, ref_z, offset_x, offset_y):
+def lnwmodule_go2pos(point, ref_x, ref_y, ref_z, offset_x, offset_y, offset_z):
     buf2 = []
     package_g2 = [255,2,0,0,0,0,0,0,0,0]
     # real_point = image_to_world(point, 0, 0, 0, 600, 600, 400, 400)
-    current_x = point[0]
-    current_y = point[1]
-    current_z = point[2]
+    current_x = point[0] + offset_x
+    current_y = point[1] + offset_y
+    current_z = point[2] + offset_z
     delta_x = current_x - ref_x
     delta_y = current_y - ref_y
     delta_z = current_z - ref_z
-    Rho = math.sqrt(delta_x ** 2 + delta_y ** 2 + delta_z ** 2)
+    Rho = math.sqrt(delta_x ** 2 + delta_y ** 2)
     if delta_x == 0 and delta_y > 0:
         Theta = 90
     elif delta_x == 0 and delta_y < 0:
@@ -188,6 +188,14 @@ def lnwmodule_go2pos(point, ref_x, ref_y, ref_z, offset_x, offset_y):
         Theta = 180
     elif delta_x == 0 and delta_y == 0:
         Theta = 0
+    # elif delta_x > 0 and delta_y < 0:
+    #     Theta = math.atan(delta_y / delta_x)
+    #     Theta = int(Theta * 180 / math.pi)
+    #     Theta = Theta + 360
+    # elif delta_x < 0 and delta_y > 0:
+    #     Theta = math.atan(delta_y / delta_x)
+    #     Theta = int(Theta * 180 / math.pi)
+    #     Theta = Theta + 180
     else:
         Theta = math.atan(delta_y / delta_x)
         Theta = int(Theta * 180 / math.pi)
@@ -360,7 +368,7 @@ def demo1_home():
         if lnwmodule_done2(lnwmodule, buf_h) == True:
             break
 
-def demo1_gotoPos(list_of_pos):
+def demo1_gotoPos(list_of_pos, offset_x, offset_y, offset_z):
     position_flag = 0
     position_count = 0
     image_count = 0
@@ -374,7 +382,7 @@ def demo1_gotoPos(list_of_pos):
         # if cc > 1000:
         #     break
         if position_flag == 0: #send position
-            current_x, current_y, current_z, package_g, buf_g = lnwmodule_go2pos(list_of_pos[position_count], ref_x, ref_y, ref_z, 0, 0)
+            current_x, current_y, current_z, package_g, buf_g = lnwmodule_go2pos(list_of_pos[position_count], ref_x, ref_y, ref_z, offset_x, offset_y, offset_z)
             ref_x = current_x
             ref_y = current_y
             ref_z = current_z
@@ -408,6 +416,29 @@ def demo1_gotoPos(list_of_pos):
 # vid.set(3, 1280) # set the resolution
 # vid.set(4, 720)
 
+
+
+def gripper_grip(flag):
+    if flag == 0:
+        buf_gr = lnwmodule_grip(1)
+        arr = []
+        arr = lnwmodule.read(4)
+        while(True):
+            if lnwmodule_done2(lnwmodule, buf_gr) == True:
+                break
+    return 1
+
+def gripper_release(flag):
+    if flag == 1:
+        buf_gr = lnwmodule_grip(0)
+        arr = []
+        arr = lnwmodule.read(4)
+        while(True):
+            if lnwmodule_done2(lnwmodule, buf_gr) == True:
+                break
+    return 0
+
+
 lnwmodule = serial.Serial()
 sleep(2)
 lnwmodule.baudrate = 19200
@@ -418,74 +449,81 @@ lnwmodule.open()
 demo1_home()
 
 # record_trigger = 0
-list_of_position = [[220, 340, 100]]
-demo1_gotoPos(list_of_position)
+# list_of_position = [[220, 340, 100]]
+# demo1_gotoPos(list_of_position)
 # if __name__ == "__main__":
 #     record_trigger = 1
 
+# list_of_position = [[220, 360, 0]]
+# demo1_gotoPos(list_of_position, 0, 0, 0)
 
+# exec(open('loop_picture.py').read())
+list_of_position = [[220, 360, 0],[210,390,0],[20,390,0],[20,150,0],[390,150,0],[390,390,0],[20,390,0],[220, 340, 0]]
+demo1_gotoPos(list_of_position, 0, 0, 0)
 
-list_of_position = [[220, 340, 100],[210,390,100],[20,390,100],[20,150,100],[390,150,100],[390,390,100],[20,390,100],[220, 340, 100]]
-demo1_gotoPos(list_of_position)
+all_find_template()
 
-point = [[80,0,0],[80,0,300]]
-demo1_gotoPos(point)
+delete_rail()
+
+point = [[75,0,0],[75,0,300]]
+demo1_gotoPos(point, 0, 0, 0)
+
+grip_flag = 0
+grip_flag = gripper_grip(grip_flag)
+
+grip_flag = gripper_release(grip_flag)
 
 point2 = [[100,100,100]]
-demo1_gotoPos(point2)
+demo1_gotoPos(point2, 0, 0, 0)
 
-point3 = [[328, 75, 202],
- [328, 188, 204],
- [315, 209, 200],
- [200, 277, 280],
- [160, 298, 300],
- [90, 334, 300]]
-demo1_gotoPos(point3)
+point3 = all_main_demo2()
+demo1_gotoPos(point3, 0, 0, 0)
 
-list_of_position = [[220, 340, 100],[210,390,100],[20,390,100],[20,150,100],[390,150,100],[390,390,100],[20,390,100],[220, 340, 100]]
-len(list_of_position)
-position_flag = 0
-position_count = 0
-image_count = 0
-record_flag = 0
-ref_x = 0
-ref_y = 0
-ref_z = 0
-cc = 0
-while(True):
-    cc += 1
-    # if cc > 1000:
-    #     break
-    if position_flag == 0: #send position
-        current_x, current_y, current_z, package_g, buf_g = lnwmodule_go2pos(list_of_position[position_count], ref_x, ref_y, ref_z, 0, 0)
-        ref_x = current_x
-        ref_y = current_y
-        ref_z = current_z
-        position_flag = 1
-        print('state 1')
-        print('ref_x = ' + str(ref_x))
-        print('ref_y = ' + str(ref_y))
-        print('ref_z = ' + str(ref_z))
-        print('package g = ' + str(package_g))
-    if position_flag == 1: #waiting for Acknowledge and Done sign from Low level
-        arr_ack = []
-        arr_ack = lnwmodule.read(4)
-        print('state 2')
-        if lnwmodule_done2(lnwmodule, buf_g) == True:
-            arr_ack = []
-            position_count += 1
-            position_flag = 0
-            print('state 3')
-            if position_count == 1:
-                record_flag = 1
-                print('state 4')
-            if position_count == len(list_of_position):
-                print(position_count)
-                # vid.release()
-                # cv2.destroyAllWindows()
-                print('state 5')
-                # state = 2
-                break
+
+# list_of_position = [[220, 340, 100],[210,390,100],[20,390,100],[20,150,100],[390,150,100],[390,390,100],[20,390,100],[220, 340, 100]]
+# len(list_of_position)
+# position_flag = 0
+# position_count = 0
+# image_count = 0
+# record_flag = 0
+# ref_x = 0
+# ref_y = 0
+# ref_z = 0
+# cc = 0
+# while(True):
+#     cc += 1
+#     # if cc > 1000:
+#     #     break
+#     if position_flag == 0: #send position
+#         current_x, current_y, current_z, package_g, buf_g = lnwmodule_go2pos(list_of_position[position_count], ref_x, ref_y, ref_z, 0, 0)
+#         ref_x = current_x
+#         ref_y = current_y
+#         ref_z = current_z
+#         position_flag = 1
+#         print('state 1')
+#         print('ref_x = ' + str(ref_x))
+#         print('ref_y = ' + str(ref_y))
+#         print('ref_z = ' + str(ref_z))
+#         print('package g = ' + str(package_g))
+#     if position_flag == 1: #waiting for Acknowledge and Done sign from Low level
+#         arr_ack = []
+#         arr_ack = lnwmodule.read(4)
+#         print('state 2')
+#         if lnwmodule_done2(lnwmodule, buf_g) == True:
+#             arr_ack = []
+#             position_count += 1
+#             position_flag = 0
+#             print('state 3')
+#             if position_count == 1:
+#                 record_flag = 1
+#                 print('state 4')
+#             if position_count == len(list_of_position):
+#                 print(position_count)
+#                 # vid.release()
+#                 # cv2.destroyAllWindows()
+#                 print('state 5')
+#                 # state = 2
+#                 break
     # if record_flag == 1:
     #     ret, frame = vid.read()
     #     cv2.imshow('frame', frame)
@@ -539,19 +577,19 @@ while(True):
 #                 # state = 2
 #                 break
 
-buf_gr = lnwmodule_grip(1)
-arr = []
-arr = lnwmodule.read(4)
-while(True):
-    if lnwmodule_done2(lnwmodule, buf_gr) == True:
-        break
-
-buf_gr = lnwmodule_grip(0)
-arr = []
-arr = lnwmodule.read(4)
-while(True):
-    if lnwmodule_done2(lnwmodule, buf_gr) == True:
-        break
+# buf_gr = lnwmodule_grip(1)
+# arr = []
+# arr = lnwmodule.read(4)
+# while(True):
+#     if lnwmodule_done2(lnwmodule, buf_gr) == True:
+#         break
+#
+# buf_gr = lnwmodule_grip(0)
+# arr = []
+# arr = lnwmodule.read(4)
+# while(True):
+#     if lnwmodule_done2(lnwmodule, buf_gr) == True:
+#         break
 
 
 # point = [[100,100,100]]

@@ -29,20 +29,25 @@ while(True):
     # Display the resulting frame
     cv2.imshow('frame', frame)
     key = cv2.waitKey(1)
-    # if key == ord('c'):
+    if key == ord('c'):
+        flag = 1
+        # name_and_path = 'rail_image/rail_image_loop/' + str(image_count) + '.jpg'
+        # cv2.imwrite(name_and_path, frame)
+        # image_count += 1
+    # elif key & 0xFF == ord('q'):
+    #     break
+    # if setting.record_trigger == 1:
     #     name_and_path = 'rail_image/rail_image_loop/' + str(image_count) + '.jpg'
     #     cv2.imwrite(name_and_path, frame)
     #     image_count += 1
-    # elif key & 0xFF == ord('q'):
-    #     break
-    if setting.record_trigger == 1:
-        name_and_path = 'rail_image/rail_image_loop/' + str(image_count) + '.jpg'
-        cv2.imwrite(name_and_path, frame)
-        image_count += 1
     # if key == ord('c'):
     #     flag = 1
     elif key & 0xFF == ord('q'):
         break
+    if flag == 1:
+        name_and_path = 'rail_image/rail_image_loop/' + str(image_count) + '.jpg'
+        cv2.imwrite(name_and_path, frame)
+        image_count += 1
     # if loop_count == 0:
     #     point = list_of_point(image_count)
     #     ref_x, ref_y, ref_z = lnwmodule_go2pos(point, ref_x, ref_y, ref_z, offset_x, offset_y)
@@ -90,7 +95,7 @@ cv2.destroyAllWindows()
 #     flag = 0
 #     while(True):
 #         ret, frame = vid.read()
-# 
+#
 #     # Display the resulting frame
 #         cv2.imshow('frame', frame)
 #         key = cv2.waitKey(1)

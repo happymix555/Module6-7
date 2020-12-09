@@ -32,6 +32,7 @@ def find_square_contours(contours, image_for_area):
     min_checkpoint_area = int(checkpoint_area / 18)
     square_contours = []
     area = []
+    peri_list = []
     for cnt in contours:
         peri = cv2.arcLength(cnt, True)
         approx = cv2.approxPolyDP(cnt, 0.15 * peri, True)
@@ -43,10 +44,12 @@ def find_square_contours(contours, image_for_area):
             if ar >= 0.9 and ar <= 1.1:
                 # area.append(cv2.contourArea(cnt))
                 if min_checkpoint_area <= cv2.contourArea(cnt) <= checkpoint_area: #and cv2.contourArea(cnt) > (checkpoint_area / 3):
-                    area.append(cv2.contourArea(cnt))
-                    square_contours.append(cnt)
+                    if peri <= 700:
+                        area.append(cv2.contourArea(cnt))
+                        square_contours.append(cnt)
+                        peri_list.append(peri)
 			# shape = "square" if ar >= 0.95 and ar <= 1.05 else "rectangle"
-    return square_contours, area
+    return square_contours, area, peri_list
 
 def blank_image_with_same_size(img):
     return(np.zeros((img.shape[0], img.shape[1], 1), dtype = np.uint8))
