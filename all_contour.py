@@ -155,7 +155,7 @@ def find_palette_by_checkpoint_area(contours, checkpoint_area, field_image_for_p
     for cnt in contours:
         pixel_count = 0
         sum = 0
-        if (max_checkpoint_area * 1.5) < cv2.contourArea(cnt) <= (max_checkpoint_area * 4):
+        if (max_checkpoint_area * 1) < cv2.contourArea(cnt) <= (max_checkpoint_area * 4):
             for x in range(len(field_image_for_pixel[0])):
                 for y in range(len(field_image_for_pixel)):
                     dist = cv2.pointPolygonTest(cnt,(x,y),False)

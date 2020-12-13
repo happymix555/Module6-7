@@ -245,6 +245,14 @@ def is_next_to(point1, point2):
 
 # def is_next_to2(point1, point2):
 
+# def shortest_path3(start_point, end_point, full_path_skeleton_image):
+#     skeleton_co1 = skeleton_coordinate2(full_path_skeleton_image)
+#     if is_point_in_list(start_point, skeleton_co1):
+#         if is_point_in_list(end_point, skeleton_co1):
+#             print('all point in list')
+
+
+
 
 def shortest_pathh(start_point, end_point, full_path_skeleton_image):
     skeleton_co = skeleton_coordinate2(full_path_skeleton_image)
@@ -282,7 +290,7 @@ def shortest_pathh(start_point, end_point, full_path_skeleton_image):
                             if is_point_in_list(co2, list1) == False:
                             # count2 +=1
                                 path1.append(co2)
-                                sk2.remove(co2)
+                                # sk2.remove(co2)
         test_count2.append(count2)
         test_count1.append(count)
         test_path2.append(path1)
@@ -290,6 +298,7 @@ def shortest_pathh(start_point, end_point, full_path_skeleton_image):
         if path[0][0] == start_point[0] and path[0][1] == start_point[1]:
             if path[-1][0] == end_point[0] and path[-1][1] == end_point[1]:
                 return path
+    # return test_path2
 
 # def shortest_pathh(start_point, end_point, full_path_skeleton_image):
 #     skeleton_co = skeleton_coordinate2(full_path_skeleton_image)
@@ -387,6 +396,16 @@ def shortest_pathh(start_point, end_point, full_path_skeleton_image):
 #             if point[0] == tp2[0] and point[1] == tp2[1]:
 #                 short_traject_path.append(point)
 #     return short_traject_path, traject_point2
+
+import skimage.graph
+### give start (y1,x1) and end (y2,x2) and the binary maze image as input
+def shortest_path(start,end,binary):
+    costs=np.where(binary,1,1000)
+    costs = skeleton_coordinate2(binary)
+    path, cost = skimage.graph.route_through_array(
+        costs, start=start, end=end, fully_connected=True)
+    return path,cost
+
 def find_real_traject_point(start_point, end_point, original_traject_point, full_path_skeleton_image):
     traject_point2 = []
     for p in original_traject_point:

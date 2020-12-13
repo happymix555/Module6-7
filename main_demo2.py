@@ -12,8 +12,9 @@ from perspective import *
 from all_aruco import *
 from all_contour import *
 from path_finder import *
+from prepare_rail_2 import *
 
-%matplotlib qt
+# %matplotlib qt
 
 # checkpoint_center = []
 # checkpoint_roi = []
@@ -386,6 +387,7 @@ from path_finder import *
 #     cv2.destroyAllWindows()
 
 def all_main_demo2():
+    delete_rail()
     checkpoint_center = []
     checkpoint_roi = []
 
@@ -691,8 +693,8 @@ def all_main_demo2():
 #         return path,cost
 #     p, c = shortest_path((115, 489), (332, 333), full_path_image)
     # sp_test = shortest_path4(template_location, ending_location, full_path_image)
-    template_location
-    ending_location
+    # template_location
+    # ending_location
     short_path_test = shortest_pathh(template_location, ending_location, full_path_image)
     short_path_test[0]
     short_path = shortest_pathh(template_location, ending_location, full_path_image)
@@ -772,8 +774,8 @@ def all_main_demo2():
 
 
 
-w, c, t, tt = all_main_demo2()
-w
-c
-t
-tt
+# w, c, t, tt = all_main_demo2()
+# w
+# c
+# t
+# tt
