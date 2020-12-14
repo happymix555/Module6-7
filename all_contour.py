@@ -117,7 +117,7 @@ def find_endpoint(checkpoint_location, field_image):
 
     # define range of white color in HSV
     # change it according to your need !
-    sensitivity = 90
+    sensitivity = 200
     lower_white = np.array([0,0,255-sensitivity])
     upper_white = np.array([255,sensitivity,255])
 
@@ -133,6 +133,18 @@ def find_endpoint(checkpoint_location, field_image):
             max = sum
             endpoint = point
     return endpoint, res
+
+# def find_endpoint(checkpoint_location, field_image):
+#     c_field = field_image.copy()
+#     gray = cv2.cvtColor(c_field, cv2.COLOR_BGR2GRAY)
+#     max = 0
+#     endpoint = None
+#     for point in checkpoint_location:
+#         sum = gray[point[1]][point[0]]
+#         if sum > max:
+#             max = sum
+#             endpoint = point
+#     return endpoint
 
 # def find_palette_by_checkpoint_area(contours, checkpoint_area):
 #     max_checkpoint_area = checkpoint_area[0]

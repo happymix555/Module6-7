@@ -546,12 +546,12 @@ def loop_picture(list_of_pos):
 
 
 def go_to_grip_and_home():
-    point = [[77,0,0],[77,0,300]]
+    point = [[42,30,0],[42,30,280]]
     demo2_gotoPos(point, 0, 0, 0)
     grip_flag = gripper_grip(0)
     point2 = [[0,0,0]]
     demo2_gotoPos(point2, 0, 0, 20)
-    demo1_home()
+    # demo1_home()
 
 def grip2():
     gripper_grip(0)
@@ -722,6 +722,71 @@ def loop_pic_ui():
      [270, 390, 0],
      [230, 390, 0],
      [220, 340, 0]]
+    # list_of_position = [[220, 330, 0],
+    #  [210, 390, 0],
+    #  [190, 390, 0],
+    #  [170, 390, 0],
+    #  [150, 390, 0],
+    #  [130, 390, 0],
+    #  [110, 390, 0],
+    #  [90, 390, 0],
+    #  [70, 390, 0],
+    #  [50, 390, 0],
+    #  [30, 390, 0],[20,390,0],[20, 370, 0],
+    #  [20, 350, 0],
+    #  [20, 330, 0],
+    #  [20, 310, 0],
+    #  [20, 290, 0],
+    #  [20, 270, 0],
+    #  [20, 250, 0],
+    #  [20, 230, 0],
+    #  [20, 210, 0],
+    #  [20, 190, 0],
+    #  [20, 170, 0],[20,150,0],[40, 150, 0],
+    #  [60, 150, 0],
+    #  [80, 150, 0],
+    #  [100, 150, 0],
+    #  [120, 150, 0],
+    #  [140, 150, 0],
+    #  [160, 150, 0],
+    #  [180, 150, 0],
+    #  [200, 150, 0],
+    #  [220, 150, 0],
+    #  [240, 150, 0],
+    #  [260, 150, 0],
+    #  [280, 150, 0],
+    #  [300, 150, 0],
+    #  [320, 150, 0],
+    #  [340, 150, 0],
+    #  [360, 150, 0],
+    #  [380, 150, 0],[390,150,0],[390, 170, 0],
+    #  [390, 190, 0],
+    #  [390, 210, 0],
+    #  [390, 230, 0],
+    #  [390, 250, 0],
+    #  [390, 270, 0],
+    #  [390, 290, 0],
+    #  [390, 310, 0],
+    #  [390, 330, 0],
+    #  [390, 350, 0],
+    #  [390, 370, 0],[390,390,0], [370, 340, 0],
+    #  [350, 340, 0],
+    #  [330, 340, 0],
+    #  [310, 340, 0],
+    #  [290, 340, 0],
+    #  [270, 340, 0],
+    #  [250, 340, 0],
+    #  [230, 340, 0],
+    #  [210, 340, 0],
+    #  [190, 340, 0],
+    #  [170, 340, 0],
+    #  [150, 340, 0],
+    #  [130, 340, 0],
+    #  [110, 340, 0],
+    #  [90, 340, 0],
+    #  [70, 340, 0],
+    #  [50, 340, 0],
+    #  [30, 340, 0],[220, 340, 0]]
     loop_picture(list_of_position)
 # loop_pic_ui()
 
@@ -900,6 +965,7 @@ list_of_point = [[77, 355, 0],
 
 import tkinter as tk
 import tkinter.ttk as ttk
+#from playsound import playsound
 
 def print_mix():
     print('mix')
@@ -940,11 +1006,11 @@ class LnwApp:
         self.button_8.pack(padx='5', pady='5', side='top')
         self.button_9 = tk.Button(self.frame_2)
         self.button_9.config(activebackground='#0080ff', background='#ff0000', font='{Impact} 24 {}', foreground='#ffffff')
-        self.button_9.config(justify='left', text='Do not click !!!!')
+        self.button_9.config(justify='left', text='Do not click !!!!', command=self.Popup)
         self.button_9.pack(padx='5', pady='5', side='top')
         self.button_10 = tk.Button(self.frame_2)
         self.button_10.config(activebackground='#0080ff', background='#ff0000', bitmap='error', font='{Impact} 24 {}')
-        self.button_10.config(foreground='#ffffff', justify='left')
+        self.button_10.config(foreground='#ffffff', justify='left',command=self.finishes)
         self.button_10.pack(padx='5', pady='5', side='top')
         self.frame_2.config(background='#ffff80', height='200', width='200')
         self.frame_2.pack(padx='10', pady='10', side='top')
@@ -965,7 +1031,26 @@ class LnwApp:
         print(self.tp)
 
     def perform_lnw(self):
-        demo2_gotoPos(self.tp, 0, -35, -30)
+        demo2_gotoPos(self.tp, 5, -35, -40)
+        self.finishes()
+
+    def Popup(self):
+        #playsound('LopingSting.mp3')
+        self.image = cv2.imread('joke.jpg')
+        cv2.imshow('joke!!!!',self.image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    def finishes(self):
+        #playsound('LopingSting.mp3')
+        self.image2 = cv2.imread('finishes.jpg')
+        width = int(self.image2.shape[1] * 1/2)
+        height = int(self.image2.shape[0] * 1/2)
+        dsize = (width, height)
+        self.image2 = cv2.resize(self.image2, dsize)
+        cv2.imshow('finishes!!!!',self.image2)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':

@@ -392,7 +392,7 @@ def all_main_demo2():
     checkpoint_roi = []
 
     template_image = cv2.imread('prepared_template/0.jpg')
-    field_image = cv2.imread('prepared_field/pera2.jpg')
+    field_image = cv2.imread('prepared_field/ready_field.jpg')
     cv2.imshow('original field', field_image)
     # field_image = cv2.fastNlMeansDenoisingColored(field_image,None, 10, 10,7,21)
     # cv2.imshow('fastNimean field', field_image)
@@ -526,7 +526,7 @@ def all_main_demo2():
         cv2.imshow('filled palette contour', filled_palette_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-        skeleton_image = skeleton_with_erotion(filled_palette_image, 18, 1)
+        skeleton_image = skeleton_with_erotion(filled_palette_image, 10, 2)
         cv2.imshow('skeletonized palette', skeleton_image)
         # cv2.waitKey(0)
         cv2.destroyAllWindows()
@@ -589,7 +589,7 @@ def all_main_demo2():
 
     for cnt in countours:
         peri = cv2.arcLength(cnt, True)
-        traject_point = cv2.approxPolyDP(cnt, 0.0015 * peri, True)
+        traject_point = cv2.approxPolyDP(cnt, 0.002 * peri, True)
         trajec_point_image = cv2.drawContours(trajec_point_image, traject_point, -1, (255, 255, 255), 10)
     traject_point
     pre_traject_point = []
